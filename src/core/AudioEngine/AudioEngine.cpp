@@ -764,6 +764,8 @@ void AudioEngine::updateBpmAndTickSize( std::shared_ptr<TransportPosition> pPos,
 	}
 
 	if ( fNewBpm != fOldBpm ) {
+		DEBUGLOG( QString( "new bpm [%1] -> [%2]" )
+.arg( fOldBpm ).arg( fNewBpm ) );
 		pPos->setBpm( fNewBpm );
 		if ( pPos == m_pTransportPosition &&
 			 trigger != Event::Trigger::Suppress ) {

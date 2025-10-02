@@ -471,6 +471,7 @@ bool MidiActionManager::timingClockTick( std::shared_ptr<MidiAction> pAction ) {
 	m_lastTick = pAction->getTimePoint();
 
 	if ( fInterval >= 60.0 * 2 / static_cast<float>(MIN_BPM) / 24.0 ) {
+		DEBUGLOG( "too long" );
 		// Waiting time was too long. We start all over again.
 		m_bMidiClockReady = false;
 		m_nTickIntervalIndex = 0;
@@ -480,16 +481,21 @@ bool MidiActionManager::timingClockTick( std::shared_ptr<MidiAction> pAction ) {
 		return true;
 	}
 
+	DEBUGLOG( QString( "fInterval: %1, index: %2" )
+.arg( fInterval ).arg( m_nTickIntervalIndex ) );
+
 	m_tickIntervals[
 		std::clamp( m_nTickIntervalIndex, 0,
 					static_cast<int>(m_tickIntervals.size()) - 1 ) ] = fInterval;
 
 	++m_nTickIntervalIndex;
 	if ( m_nTickIntervalIndex >= MidiActionManager::nMidiClockIntervals ) {
+		DEBUGLOG( "reset" );
 		m_nTickIntervalIndex = 0;
 
 		// We got at least 10 messages. Let's start averaging.
 		if ( ! m_bMidiClockReady ) {
+			DEBUGLOG( "ready" );
 			m_bMidiClockReady = true;
 		}
 	}
@@ -502,6 +508,7 @@ bool MidiActionManager::timingClockTick( std::shared_ptr<MidiAction> pAction ) {
 		const float fBpm = static_cast<float>(
 			60.0 * static_cast<double>(m_tickIntervals.size()) /
 			fAverageInterval / 24.0 );
+		DEBUGLOG( fBpm );
 
 		pAudioEngine->lock( RIGHT_HERE );
 		pAudioEngine->setNextBpm( fBpm );
@@ -521,6 +528,7 @@ bool MidiActionManager::timingClockTick( std::shared_ptr<MidiAction> pAction ) {
 }
 
 void MidiActionManager::resetTimingClockTicks() {
+	DEBUGLOG( "" );
 	m_bMidiClockReady = false;
 	m_nTickIntervalIndex = 0;
 	m_lastTick = TimePoint();

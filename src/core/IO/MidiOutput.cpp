@@ -103,6 +103,7 @@ void MidiOutput::startMidiClockStream( float fBpm ) {
 	m_bSendClockTick = true;
 	m_nTickCount = 0;
 	m_pClockThread = std::make_shared<std::thread>( MidiOutput::midiClockStream );
+	DEBUGLOG( fBpm );
 }
 
 void MidiOutput::stopMidiClockStream() {
@@ -120,6 +121,7 @@ void MidiOutput::stopMidiClockStream() {
 	m_lastTick = TimePoint();
 	m_intervalCompensation = std::chrono::microseconds::zero();
 	m_nAverageIntervalNs = 0;
+	DEBUGLOG( "DONE" );
 }
 
 void MidiOutput::waitForNextMidiClockTick() {
